@@ -18,14 +18,22 @@ import streamlit as st
 
 # ---------- 1. A清理練習與完整切塊函式 ----------
 def clean_text(text: str) -> str:
-    """TODO A：傳入str，回傳保留段落、合併行內空白的新字串。"""
+    """傳入str，回傳保留段落、合併行內空白的新字串。"""
     # 已提供：統一換行，之後只需處理\n。
     normalized = text.replace("\r\n", "\n").replace("\r", "\n")
-    # TODO A：
-    # 1. 逐行合併多餘空白（參考第4節的示範）。
-    # 2. 連續空白行最多保留一個（參考4-1的re.sub）。
-    # 3. 去掉頭尾空白後return；日期、數字、標點不能刪。
-    raise NotImplementedError("請完成TODO A：文字清理")
+
+    # 1. 逐行合併多餘空白：逐行做，才不會把整份文件黏成一段。
+    #    split()會把空格、Tab、全形空白都當分隔，join後變成單一半形空格，
+    #    同時去掉行首行尾空白；空白行會變成空字串。
+    lines = []
+    for line in normalized.split("\n"):
+        lines.append(" ".join(line.split()))
+
+    # 2. 連續空白行最多保留一個：3個以上\n縮成2個\n（即一個空白行）。
+    result = re.sub(r"\n{3,}", "\n\n", "\n".join(lines))
+
+    # 3. 去掉頭尾空白後return；日期、數字、標點都不會被動到。
+    return result.strip()
 
 
 def chunk_text(text: str, chunk_size: int = 800, overlap: int = 120) -> list[dict]:
